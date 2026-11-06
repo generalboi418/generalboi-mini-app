@@ -1,9 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generalboi Mini App</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,6 +16,7 @@
       padding: 40px 20px;
       color: #1c1e21;
     }
+
     .card {
       background: white;
       max-width: 350px;
@@ -20,8 +25,11 @@
       border-radius: 16px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
+
     h1 { color: #1877f2; }
+
     p { line-height: 1.6; }
+
     .button {
       display: block;
       color: white;
@@ -31,23 +39,40 @@
       font-weight: bold;
       margin-top: 16px;
     }
+
     .facebook { background: #1877f2; }
     .messenger { background: #0866ff; }
-    .button:focus { outline: 3px solid #1c1e21; outline-offset: 3px; }
+
+    .button:focus {
+      outline: 3px solid #1c1e21;
+      outline-offset: 3px;
+    }
   </style>
 </head>
+
 <body>
   <div class="card">
     <h1>Generalboi 🌟</h1>
     <h2>Welcome!</h2>
+
     <p>Choose which service you would like to open.</p>
-    <a class="button facebook" href="https://www.facebook.com/reg/" target="_blank" rel="noopener noreferrer">
-      Create a Facebook Account
+
+    <a class="button facebook"
+       href="https://www.facebook.com/reg/">
+       Create a Facebook Account
     </a>
-    <a class="button messenger" href="https://www.messenger.com/" target="_blank" rel="noopener noreferrer">
-      Open Messenger
+
+    <a class="button messenger"
+       href="https://www.facebook.com/login/">
+       Login to Messenger
     </a>
-    <p><small>Facebook and Messenger are official external services. This app does not collect your passwords or login details.</small></p>
+
+    <p>
+      <small>
+        Login securely through Meta's official website.
+        Generalboi does not collect your login details.
+      </small>
+    </p>
   </div>
 </body>
 </html>
