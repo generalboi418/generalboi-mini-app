@@ -26,7 +26,7 @@ async function telegramUser(req: Request): Promise<string> {
   const supplied=params.get("hash");
   if(!supplied) throw new Error("Invalid Telegram session.");
   params.delete("hash");
-  const pairs=[...params.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`);
+  const pairs=[...params.entries()].sort(([a],[b])=>a < b ? -1 : a > b ? 1 : 0).map(([k,v])=>`${k}=${v}`);
   const secret=await hmac(enc.encode("WebAppData"),token);
   const calculated=hex(await hmac(secret,pairs.join("\n")));
   if(!equal(calculated,supplied)) throw new Error("Telegram session could not be verified.");
