@@ -1,0 +1,2 @@
+[functions.threads-auth]
+verify_jwt = false
