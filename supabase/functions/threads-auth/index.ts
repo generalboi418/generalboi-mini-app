@@ -39,7 +39,13 @@ async function telegramUser(req: Request): Promise<string> {
   return String(parsed.id);
 }
 const supabaseUrl=()=>Deno.env.get("SUPABASE_URL")!;
-const serviceKey=()=>Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const serviceKey=()=>{
+  const legacy=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if(legacy) return legacy;
+  const keys=Deno.env.get("SUPABASE_SECRET_KEYS");
+  if(keys) { const parsed=JSON.parse(keys); if(parsed.default) return parsed.default; }
+  throw new Error("Supabase server secret key is not available.");
+};
 async function db(path: string, method="GET", body?: unknown, prefer?: string) {
   const response=await fetch(`${supabaseUrl()}/rest/v1/${path}`,{
     method,headers:{"apikey":serviceKey(),"Authorization":`Bearer ${serviceKey()}`,"Content-Type":"application/json","Prefer":prefer??"return=representation"},
@@ -69,7 +75,8 @@ async function callback(req: Request) {
     const hash=await sha(state);
     const states=await db(`telegram_threads_oauth_states?state_hash=eq.${encodeURIComponent(hash)}&consumed_at=is.null&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=state_hash,telegram_user_id`,"GET");
     if(!states?.length) throw new Error("This sign-in link expired. Start again in Telegram.");
-    await db(`telegram_threads_oauth_states?state_hash=eq.${encodeURIComponent(hash)}&consumed_at=is.null`,"PATCH",{consumed_at:new Date().toISOString()},"return=minimal");
+    const consumed=await db(`telegram_threads_oauth_states?state_hash=eq.${encodeURIComponent(hash)}&consumed_at=is.null`,"PATCH",{consumed_at:new Date().toISOString()},"return=representation");
+    if(!consumed?.length) throw new Error("This sign-in link has already been used.");
     const appId=Deno.env.get("THREADS_APP_ID");
     const secret=Deno.env.get("THREADS_APP_SECRET");
     if(!appId || !secret) throw new Error("Threads app credentials are not configured.");
