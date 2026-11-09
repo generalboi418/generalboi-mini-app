@@ -31,7 +31,7 @@ async function telegramUser(req: Request): Promise<string> {
   const calculated=hex(await hmac(secret,pairs.join("\n")));
   if(!equal(calculated,supplied)) throw new Error("Telegram session could not be verified.");
   const authDate=Number(params.get("auth_date"));
-  if(!authDate || Date.now()/1000-authDate>86400 || authDate>Date.now()/1000+60) throw new Error("Telegram session expired. Close and reopen the Mini App.");
+  if(!authDate || Date.now()/1000-authDate>600 || authDate>Date.now()/1000+60) throw new Error("Telegram session expired. Close and reopen the Mini App.");
   const user=params.get("user");
   if(!user) throw new Error("Telegram user details are missing.");
   const parsed=JSON.parse(user);
@@ -75,7 +75,7 @@ async function callback(req: Request) {
     const hash=await sha(state);
     const states=await db(`telegram_threads_oauth_states?state_hash=eq.${encodeURIComponent(hash)}&consumed_at=is.null&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=state_hash,telegram_user_id`,"GET");
     if(!states?.length) throw new Error("This sign-in link expired. Start again in Telegram.");
-    const consumed=await db(`telegram_threads_oauth_states?state_hash=eq.${encodeURIComponent(hash)}&consumed_at=is.null`,"PATCH",{consumed_at:new Date().toISOString()},"return=representation");
+    const consumed=await db(`telegram_threads_oauth_states?state_hash=eq.${encodeURIComponent(hash)}&consumed_at=is.null&expires_at=gt.${encodeURIComponent(new Date().toISOString())}`,"PATCH",{consumed_at:new Date().toISOString()},"return=representation");
     if(!consumed?.length) throw new Error("This sign-in link has already been used.");
     const appId=Deno.env.get("THREADS_APP_ID");
     const secret=Deno.env.get("THREADS_APP_SECRET");
