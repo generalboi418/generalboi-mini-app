@@ -36,7 +36,7 @@ create table if not exists public.telegram_threads_account_preferences (
   constraint telegram_threads_active_account_owner_fk
     foreign key (active_account_id, telegram_user_id)
     references public.telegram_threads_accounts (id, telegram_user_id)
-    on delete set null
+    on delete cascade
 );
 
 alter table public.telegram_threads_oauth_states enable row level security;
